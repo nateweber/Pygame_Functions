@@ -15,14 +15,16 @@ setAutoUpdate(False)
 inMainRoom = 0
 inScottRoom = 0
 withGnome = 0
+doorKey = "no"
+
 
 
 '''
 BACKGROUND IMAGE
 '''
 
-setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,
-                       ["images/forest.jpg", "images/forest.jpg"]  ])
+setBackgroundImage( [  ["images/forest.jpg","images/forest.jpg"] ,
+                       ["images/stage2.png", "images/forest.jpg"]  ])
 
 
 '''
@@ -32,14 +34,14 @@ SPRITES
 door = makeSprite("images/door2.png")
 showSprite(door)
 doorx = 590
-doory = 90
+doory = -1180
 moveSprite(door,doorx,doory,False)
 
 #gnome
 gnome = makeSprite("images/gnome.png")
 showSprite(gnome)
 gnomeX = 650
-gnomeY = 170
+gnomeY = -1060
 moveSprite(gnome,gnomeX,gnomeY,False)
 
 #Exit
@@ -56,14 +58,14 @@ moveSprite(coin,coinx,coiny,False)
 scott = makeSprite("images/travis-scott-head.png")
 showSprite(scott)
 scottX = 90
-scottY = 70
+scottY = -1200
 moveSprite(scott,scottX,scottY,False)
 
 #SCOTT Door
 scottdoor = makeSprite("images/door.png")
 showSprite(scottdoor)
 scottdoorX = 192
-scottdoorY = 240
+scottdoorY = -1030
 moveSprite(scottdoor,scottdoorX,scottdoorY,False)
 
 #FOUNTAIN
@@ -73,6 +75,12 @@ fountainx = 900
 fountainy = 150
 moveSprite(fountain,fountainx,fountainy,False)
 
+#CASTLE GUARD
+guard = makeSprite("images/castle-guard.png")
+showSprite(guard)
+guardX = 305
+guardY = -110
+moveSprite(guard,guardX,guardY,False)
 
 #HERO
 hero  = makeSprite("images/links.gif",32)  # links.gif contains 32 separate frames of animation. Sizes are automatically calculated.
@@ -119,7 +127,7 @@ def fire_ammo_down(x, y):
 enemy = makeSprite("images/enemy.png")
 showSprite(enemy)
 enemyx = 500
-enemyy = 200
+enemyy = 1200
 moveSprite(enemy,enemyx,enemyy,False)
 enemy_status = "alive"
 
@@ -135,7 +143,8 @@ gnomeIntro1 = makeLabel("Hi! I'm Lil Tjay the Gnome. I guard the red door. Want 
 gnomeIntro2 = makeLabel("You're back? Fine, want to try again? Y or N?", 25, 100, 200, gnomeColor, background="red")
 gnomeIntro3 = makeLabel("Hope you enjoyed the main room.", 25, 100, 200, gnomeColor, background="red")
 gnomeN = makeLabel("K. Bye.", 24, 100, 200, gnomeColor, background="red")
-gnomeYes = makeLabel("What is always in front of you but can’t be seen?", 24, 100, 200, gnomeColor, background="red")
+gnomeYes = makeLabel("You must answer a riddle. What is always in front of you but can’t be seen?", 24, 100, 200, gnomeColor, background="red")
+riddleAnswer = "the future"
 
 #gnomeLabel3 = makeLabel("Correct! You may enter!", 24, 100, 200, gnomeColor, background="red")
 
@@ -149,12 +158,27 @@ scoreLabel = makeLabel("Score: 0", 28, 100, 100, scoreColour, background="black"
 showLabel(scoreLabel)
 score = 0
 
-dthColour = "black"
-dthLabel = makeLabel("EATEN BY DRAGON!!!!", 70, 100, 200, dthColour, background="green")
+slayedColor = "orange"
+slayedLabel = makeLabel("Dragons Slayed: 0", 28, 225, 100, slayedColor, background="black")
+showLabel(slayedLabel)
+slayed = 0
+
+dthColour = "white"
+dthLabel = makeLabel("EATEN BY DRAGON!!!!", 80, 100, 50, dthColour, background="orange")
+
+gameoverColor = "white"
+gameoverLabel = makeLabel("Game Over :(", 80, 100, 150, gameoverColor, background="maroon")
 
 killColour = "black"
 killLabel = makeLabel("SLAYED DRAGON!!!!", 70, 100, 200, killColour, background="orange")
 
+
+noKeyColor = "red"
+noKeyLabel = makeLabel("You can't enter without a key!", 35, 100, 200, noKeyColor, background="black")
+
+
+wordBox = makeTextBox(450, 300, 300, 0, "Enter answer here", 15, 24)
+hideTextBox(wordBox)
 
 '''
 OTHER SETUP
@@ -171,7 +195,6 @@ while True:
     if clock() > nextFrame:                         # We only animate our character every 80ms.
         frame = (frame+1)%8                         # There are 8 frames of animation in each direction
         nextFrame += 80                             # so the modulus 8 allows it to loop
-
 
 #ENEMY MOVEMENT
     
@@ -207,6 +230,7 @@ while True:
         gnomeX -= 5
         scottX -= 5
         scottdoorX -= 5
+        guardX -= 5
 
         moveSprite(door,doorx,doory,False)
         #moveSprite(exit,exitx,exity,False)
@@ -216,6 +240,7 @@ while True:
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        moveSprite(guard,guardX,guardY,False)
 
 
 
@@ -234,6 +259,8 @@ while True:
         gnomeY -=5
         scottY -= 5
         scottdoorY -= 5
+        guardY -= 5
+
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
@@ -244,6 +271,7 @@ while True:
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        moveSprite(guard,guardX,guardY,False)
 
 
     elif keyPressed("left"):
@@ -257,6 +285,7 @@ while True:
         gnomeX += 5
         scottX += 5
         scottdoorX += 5
+        guardX += 5
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
@@ -267,6 +296,7 @@ while True:
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        moveSprite(guard,guardX,guardY,False)
 
 
     elif keyPressed("up"):
@@ -281,6 +311,7 @@ while True:
         gnomeY +=5
         scottY += 5
         scottdoorY += 5
+        guardY += 5
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
@@ -291,6 +322,7 @@ while True:
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        moveSprite(guard,guardX,guardY,False)
 
 
     else:
@@ -437,6 +469,7 @@ while True:
       hideSprite(fountain)
       setBackgroundImage("images/death.jpg")
       showLabel(dthLabel)
+      showLabel(gameoverLabel)
       '''
       if keyPressed("x"):
         setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
@@ -458,6 +491,13 @@ while True:
         hideLabel(gnomeIntro1)
         showLabel(gnomeYes)
         withGnome = 1
+        showTextBox(wordBox)
+        entry = textBoxInput(wordBox).lower()
+        if entry == riddleAnswer:
+          print("Congrats!")
+          doorKey = "yes"
+          hideTextBox(wordBox)
+          hideLabel(gnomeYes)
       if keyPressed("N"):
         withGnome = 1
         hideLabel(gnomeIntro1)
@@ -469,7 +509,7 @@ while True:
       hideLabel(gnomeIntro1)
    
     #SECOND INTERACTION
-    if touching(hero, gnome) and withGnome == 1:
+    if touching(hero, gnome) and withGnome == 1 and doorKey is "no":
       showLabel(gnomeIntro2)
       if keyPressed("Y"):
         hideLabel(gnomeIntro2)
@@ -493,7 +533,12 @@ while True:
 
 
 #ENTER MAIN ROOM
-    if touching(hero, door) and inScottRoom == 0:
+    if touching(hero, door) and inScottRoom == 0 and doorKey == "no":
+      showLabel(noKeyLabel)
+    else:
+      hideLabel(noKeyLabel)
+
+    if touching(hero, door) and inScottRoom == 0 and doorKey == "yes":
       inMainRoom = 1
       hideAll()
       hideSprite(door)

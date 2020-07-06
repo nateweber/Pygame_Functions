@@ -8,20 +8,18 @@ import math, random
 '''
 SETUP
 '''
-
 counter = 0
 shoot = 0
-
-
 screenSize(960,720)
 setAutoUpdate(False)
-atFountain = 0
 inMainRoom = 0
+inScottRoom = 0
+withGnome = 0
+
+
 '''
 BACKGROUND IMAGE
 '''
-
-#setBackgroundImage("images/stage2.png")
 
 setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,
                        ["images/forest.jpg", "images/forest.jpg"]  ])
@@ -31,26 +29,22 @@ setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,
 SPRITES
 '''
 #DOOR
-door = makeSprite("images/door.png")
+door = makeSprite("images/door2.png")
 showSprite(door)
-#door.rect.x = 600
-#door.rect.y = 0
-doorx = 600
-doory = 0
+doorx = 590
+doory = 90
 moveSprite(door,doorx,doory,False)
 
+#gnome
+gnome = makeSprite("images/gnome.png")
+showSprite(gnome)
+gnomeX = 650
+gnomeY = 170
+moveSprite(gnome,gnomeX,gnomeY,False)
+
+#Exit
 
 
-'''
-#PORTAL
-portal = makeSprite("images/portal.png")
-showSprite(portal)
-#door.rect.x = 600
-#door.rect.y = 0
-portalx = 600
-portaly = 400
-moveSprite(portal,portalx,portaly,False)
-'''
 #COIN
 coin = makeSprite("images/fountain.png")
 showSprite(coin)
@@ -58,26 +52,27 @@ coinx = 150
 coiny = 500
 moveSprite(coin,coinx,coiny,False)
 
+#SCOTT
+scott = makeSprite("images/travis-scott-head.png")
+showSprite(scott)
+scottX = 90
+scottY = 70
+moveSprite(scott,scottX,scottY,False)
+
+#SCOTT Door
+scottdoor = makeSprite("images/door.png")
+showSprite(scottdoor)
+scottdoorX = 192
+scottdoorY = 240
+moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+
 #FOUNTAIN
 fountain = makeSprite("images/fountain.png")
 showSprite(fountain)
 fountainx = 900
 fountainy = 150
 moveSprite(fountain,fountainx,fountainy,False)
-'''
-#NATHAN
-nathan = makeSprite("images/nathan.png")
-nathanx = 100
-nathany = 100
-moveSprite(nathan,nathanx,nathany,False)
 
-#EXIT
-exit = makeSprite("images/nathan.png")
-#moveSprite(exit,240,10,False)
-#showSprite(exit)
-exitx = 300
-exity = 0
-'''
 
 #HERO
 hero  = makeSprite("images/links.gif",32)  # links.gif contains 32 separate frames of animation. Sizes are automatically calculated.
@@ -88,19 +83,34 @@ moveSprite(hero,herox,heroy,False)
 showSprite(hero)
 
 #AMMO
-#ammo = makeSprite("images/ball.png")
-#ammox = herox
-#ammoy = heroy
 ammo = makeSprite("images/ball.png")
 ammoX = herox
 ammoY = heroy
-ammoX_change = 0
+ammoX_change = 10
 ammoY_change = 10
 ammo_state = "ready"
 
 def fire_ammo(x, y):
     global ammo_state
     ammo_state = "fire"
+    showSprite(ammo)
+    moveSprite(ammo, x+16, y+10)
+
+def fire_ammo_left(x, y):
+    global ammo_state
+    ammo_state = "fire left"
+    showSprite(ammo)
+    moveSprite(ammo, x+16, y+10)
+
+def fire_ammo_right(x, y):
+    global ammo_state
+    ammo_state = "fire right"
+    showSprite(ammo)
+    moveSprite(ammo, x+16, y+10)
+
+def fire_ammo_down(x, y):
+    global ammo_state
+    ammo_state = "fire down"
     showSprite(ammo)
     moveSprite(ammo, x+16, y+10)
 
@@ -111,14 +121,24 @@ showSprite(enemy)
 enemyx = 500
 enemyy = 200
 moveSprite(enemy,enemyx,enemyy,False)
-#enemy.xspeed = 1
-#enemy.yspeed = 1
+enemy_status = "alive"
 
+
+'''
+TEXT
+'''
 #TEST TEXT
 
 
-ftnColour = "white"
-ftnLabel = makeLabel("Welcome to the fountain. Want to know more? Press y. Leave, press x.", 24, 100, 200, ftnColour, background="pink")
+gnomeColor = "white"
+gnomeIntro1 = makeLabel("Hi! I'm Lil Tjay the Gnome. I guard the red door. Want to enter it? Y or N?", 25, 100, 200, gnomeColor, background="red")
+gnomeIntro2 = makeLabel("You're back? Fine, want to try again? Y or N?", 25, 100, 200, gnomeColor, background="red")
+gnomeIntro3 = makeLabel("Hope you enjoyed the main room.", 25, 100, 200, gnomeColor, background="red")
+gnomeN = makeLabel("K. Bye.", 24, 100, 200, gnomeColor, background="red")
+gnomeYes = makeLabel("What is always in front of you but can’t be seen?", 24, 100, 200, gnomeColor, background="red")
+
+#gnomeLabel3 = makeLabel("Correct! You may enter!", 24, 100, 200, gnomeColor, background="red")
+
 
 ftnColour = "white"
 ftnLabel2 = makeLabel("Cool. Not much happening here. Just testing. Leave, press x.", 24, 100, 200, ftnColour, background="pink")
@@ -131,6 +151,9 @@ score = 0
 
 dthColour = "black"
 dthLabel = makeLabel("EATEN BY DRAGON!!!!", 70, 100, 200, dthColour, background="green")
+
+killColour = "black"
+killLabel = makeLabel("SLAYED DRAGON!!!!", 70, 100, 200, killColour, background="orange")
 
 
 '''
@@ -149,8 +172,7 @@ while True:
         frame = (frame+1)%8                         # There are 8 frames of animation in each direction
         nextFrame += 80                             # so the modulus 8 allows it to loop
 
-    ammox = herox
-    ammoy = heroy
+
 #ENEMY MOVEMENT
     
     distance = 500
@@ -159,12 +181,10 @@ while True:
 
     if counter >= 0 and counter <= distance:
       enemyx -= speed
-      #enemyy += speed
       
       
     elif counter >= distance and counter <= distance*2:
       enemyx += speed
-      #enemyy -= speed
 
 
     else:
@@ -175,7 +195,7 @@ while True:
     
 
     moveSprite(enemy,enemyx,enemyy,False)
-
+#HERO MOVEMENT
     if keyPressed("right"):
         changeSpriteImage(hero, 0*8+frame)    # 0*8 because right animations are the 0th set in the sprite sheet
         scrollBackground(-5,0)                      # The player is moving right, so we scroll the background left
@@ -184,15 +204,22 @@ while True:
         fountainx -=5
         coinx -= 5
         enemyx -= 5
+        gnomeX -= 5
+        scottX -= 5
+        scottdoorX -= 5
 
         moveSprite(door,doorx,doory,False)
         #moveSprite(exit,exitx,exity,False)
         moveSprite(fountain,fountainx,fountainy,False)
         moveSprite(coin,coinx,coiny,False)
         moveSprite(enemy,enemyx,enemyy,False)
+        moveSprite(gnome,gnomeX,gnomeY,False)
+        moveSprite(scott,scottX,scottY,False)
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
 
-        print(door.rect.x)
-        print(door.rect.y)
+
+
+
 
 
 
@@ -204,15 +231,20 @@ while True:
         fountainy -=5
         coiny -=5
         enemyy -=5
+        gnomeY -=5
+        scottY -= 5
+        scottdoorY -= 5
 
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
         #moveSprite(exit,exitx,exity,False)
         moveSprite(fountain,fountainx,fountainy,False)
         moveSprite(coin,coinx,coiny,False)
         moveSprite(enemy,enemyx,enemyy,False)
+        moveSprite(gnome,gnomeX,gnomeY,False)
+        moveSprite(scott,scottX,scottY,False)
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
 
-        print(door.rect.x)
-        print(door.rect.y)
 
     elif keyPressed("left"):
         changeSpriteImage(hero, 2*8+frame)    # and so on
@@ -222,33 +254,44 @@ while True:
         fountainx +=5
         coinx += 5
         enemyx += 5
+        gnomeX += 5
+        scottX += 5
+        scottdoorX += 5
 
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
         #moveSprite(exit,exitx,exity,False)
         moveSprite(fountain,fountainx,fountainy,False)
         moveSprite(coin,coinx,coiny,False)
         moveSprite(enemy,enemyx,enemyy,False)
+        moveSprite(gnome,gnomeX,gnomeY,False)
+        moveSprite(scott,scottX,scottY,False)
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
 
-        print(door.rect.x)
-        print(door.rect.y)
 
     elif keyPressed("up"):
         changeSpriteImage(hero,3*8+frame)
         scrollBackground(0,5)
+
         doory += 5
         #exity += 5
         fountainy +=5
         coiny += 5
         enemyy += 5
+        gnomeY +=5
+        scottY += 5
+        scottdoorY += 5
 
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorx,doory,False)
         #moveSprite(exit,doorx,doory,False)
         moveSprite(fountain,fountainx,fountainy,False)
         moveSprite(coin,coinx,coiny,False)
         moveSprite(enemy,enemyx,enemyy,False)
+        moveSprite(gnome,gnomeX,gnomeY,False)
+        moveSprite(scott,scottX,scottY,False)
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
 
-        print(door.rect.x)
-        print(door.rect.y)
 
     else:
         changeSpriteImage(hero, 1 * 8 + 5)  # the static facing front look
@@ -256,22 +299,70 @@ while True:
     updateDisplay()
     tick(120)
 #SHOOT
-
-    if keyPressed("space"):
+    if keyPressed("w"):
       if ammo_state is "ready":
                     # Get the current x cordinate of the spaceship
         ammoX = herox
         ammoY = heroy
         fire_ammo(ammoX, ammoY)
+    
+    if keyPressed("a"):
+      if ammo_state is "ready":
+                    # Get the current x cordinate of the spaceship
+        ammoX = herox
+        ammoY = heroy
+        fire_ammo_left(ammoX, ammoY)
+
+    if keyPressed("s"):
+      if ammo_state is "ready":
+                    # Get the current x cordinate of the spaceship
+        ammoX = herox
+        ammoY = heroy
+        fire_ammo_down(ammoX, ammoY)
+
+    if keyPressed("d"):
+      if ammo_state is "ready":
+                    # Get the current x cordinate of the spaceship
+        ammoX = herox
+        ammoY = heroy
+        fire_ammo_right(ammoX, ammoY)
+
 
     # Bullet Movement
     if ammoY <= 0:
-      ammoY = 480
+      ammoY = heroy
       ammo_state = "ready"
+
+    if ammoY >= 950:
+      ammoY = heroy
+      ammo_state = "ready"
+
+    if ammoX <= 0:
+      ammoX = herox
+      ammo_state = "ready"
+    
+    if ammoX >= 950:
+      ammoX = herox
+      ammo_state = "ready"
+
+
 
     if ammo_state is "fire":
       fire_ammo(ammoX, ammoY)
       ammoY -= ammoY_change
+
+    if ammo_state is "fire left":
+      fire_ammo_left(ammoX, ammoY)
+      ammoX -= ammoX_change
+
+    if ammo_state is "fire down":
+      fire_ammo_down(ammoX, ammoY)
+      ammoY += ammoY_change
+    
+    if ammo_state is "fire right":
+      fire_ammo_right(ammoX, ammoY)
+      ammoX += ammoX_change
+        
 
     '''
     distance = 500
@@ -295,7 +386,7 @@ while True:
     shoot+=1
     '''
 
-
+    '''
 #COIN PICKUP
     if touching(hero,coin):
       print("coin!")
@@ -303,7 +394,7 @@ while True:
       changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColour)  # Update the label
       #hideSprite(coin)
       coinpick = 1
-
+    '''
 
     '''
 
@@ -326,105 +417,133 @@ while True:
         hideLabel(ftnLabel)
         atFountain = 0
     '''
+#KILL DRAGON
+
+    if touching(ammo, enemy) and enemy_status is "alive":
+      killSprite(enemy)
+      enemy_status = "dead"
+      showLabel(killLabel)
+      updateDisplay()
+      tick(2)
+      #pause(5000, allowEsc=True)
+      hideLabel(killLabel)
+      #updateDisplay()
+      #tick(60)
+
 #EATEN BY DRAGON
 
-    if touching(hero, enemy):
+    if touching(hero, enemy) and enemy_status is "alive":
       hideAll()
       hideSprite(fountain)
       setBackgroundImage("images/death.jpg")
       showLabel(dthLabel)
-
+      '''
       if keyPressed("x"):
         setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
         unhideAll()
         hideLabel(dthLabel)
         enemyx = 600
         enemyy = 200
-        doorx = 600
-        doory = 0
+        doorx = 590
+        doory = 90
         moveSprite(door,doorx,doory,False)
         moveSprite(hero,300,300,False)
         moveSprite(enemy,enemyx,enemyy,False)
-        #print(hero.rect.x)
-        #print(hero.rect.y)
+      '''
+#SPEAK WITH GNOME
+    #FIRST INTERACTION
+    if touching(hero, gnome) and withGnome < 1:
+      showLabel(gnomeIntro1)
+      if keyPressed("Y"):
+        hideLabel(gnomeIntro1)
+        showLabel(gnomeYes)
+        withGnome = 1
+      if keyPressed("N"):
+        withGnome = 1
+        hideLabel(gnomeIntro1)
+        showLabel(gnomeN)
+        updateDisplay()
+        tick(2)
+        hideLabel(gnomeN)
+    else:
+      hideLabel(gnomeIntro1)
+   
+    #SECOND INTERACTION
+    if touching(hero, gnome) and withGnome == 1:
+      showLabel(gnomeIntro2)
+      if keyPressed("Y"):
+        hideLabel(gnomeIntro2)
+        showLabel(gnomeYes)
+        withGnome = 1
+      if keyPressed("N"):
+        withGnome = 1
+        hideLabel(gnomeIntro2)
+        showLabel(gnomeN)
+        updateDisplay()
+        tick(2)
+        hideLabel(gnomeN)
+    else:
+      hideLabel(gnomeIntro2)
+    
+    #POST-ROOM INTERACTION
+    if touching(hero, gnome) and withGnome == 2:
+      showLabel(gnomeIntro3)
+    else:
+      hideLabel(gnomeIntro3)
 
 
 #ENTER MAIN ROOM
-    if touching(hero, door):
+    if touching(hero, door) and inScottRoom == 0:
       inMainRoom = 1
-      #hideSprite(door)
       hideAll()
-      #moveSprite(hero,2000,2000,False)
-      print(door.rect.x)
-      print(door.rect.y)
       hideSprite(door)
       setBackgroundImage("images/mainroom.jpg")
-      if keyPressed("x"):
+#LEAVE MAIN ROOM
+    if keyPressed("x") and inMainRoom == 1:
+        inMainRoom = 0
+        unhideAll()
+        setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
+        doorx = 590
+        doory = 90
+        gnomeX = 650
+        gnomeY = 170
+        scottdoorX = 192
+        scottdoorY = 225
+        scottX = 90
+        scottY = 70
+        moveSprite(hero,600,200,False)
+        moveSprite(door,600,0,False)
+        moveSprite(gnome, gnomeX, 170, False)
+        moveSprite(scottdoor,192, 225, False)
+        moveSprite(scott,90, 70, False)
+    
+#SCOTT ROOM
+    if touching(hero, scottdoor):
+      inScottRoom = 1
+      hideSprite(scottdoor)
+      hideAll()
+      showSprite(hero)
+      #moveSprite(hero,200,475,False)
+      setBackgroundImage("images/stage.png")
+      print("Touching")
+    if inScottRoom == 1 and keyPressed("x"):
+        inScottRoom = 0
         unhideAll()
         setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
         #showSprite(door)
-        doorx = 600
-        doory = 0
-        moveSprite(hero,600,200,False)
-        moveSprite(door,600,0,False)
-        #print(hero.rect.x)
-        #print(hero.rect.y)
-
-        
-
-
-'''
-      #hideSprite(fountain)
-      #hideSprite(hero)
-      if inMainRoom == 1:
-        score += 50
-        print("Door!")
-        changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColour)  # Update the label
-
-    if inMainRoom >= 1:
-      setBackgroundImage("images/mainroom.jpg")
-      showLabel(ftnLabel)
-      #showSprite(nathan)
-
-      if keyPressed("y"):
-        #changeLabel(ftnLabel, "ftnLabel2")
-        hideLabel(ftnLabel)
-        showLabel(ftnLabel2)
-      elif keyPressed("x"):
-        inMainRoom = 0
-        setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
-        hideLabel(ftnLabel)
-        showSprite(hero)
-        showSprite(door)
-        moveSprite(hero,200,200,False)
-        moveSprite(door,100,400,False)
-'''        
-
-
-
-
-'''
-    if touching(hero, door):
-      print("touching")
-      setBackgroundImage("images/stage.png")
-      showSprite(exit)
-      moveSprite(exit,0,0,False)
-      killSprite(door)
-    if keyPressed("space"):
-      print("exit!")
-      setBackgroundImage("images/stage2.png")
-      showSprite(door)
-      killSprite(exit)
-'''
-
-
-
-      #if touching(hero, exit):
-        #print("exit!")
-        #setBackgroundImage("images/stage2.png")
-    #else:
-     # setBackgroundImage("images/stage2.png")
-
+        doorx = 590
+        doory = 90
+        gnomeX = 650
+        gnomeY = 170
+        scottdoorX = 192
+        scottdoorY = 225
+        scottX = 90
+        scottY = 70
+        moveSprite(hero,200,300,False)
+        moveSprite(door,doorx,doory,False)
+        moveSprite(gnome, gnomeX, 170, False)
+        moveSprite(scottdoor,192, 225, False)
+        moveSprite(scott,90, 70, False)
 
 
 

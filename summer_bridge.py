@@ -16,6 +16,9 @@ inMainRoom = 0
 inScottRoom = 0
 withGnome = 0
 doorKey = "no"
+metGuard = "no"
+coinpick = 0
+
 
 
 
@@ -33,9 +36,9 @@ SPRITES
 #DOOR
 door = makeSprite("images/door2.png")
 showSprite(door)
-doorx = 590
-doory = -1180
-moveSprite(door,doorx,doory,False)
+doorX = 590
+doorY = -1180
+moveSprite(door,doorX,doorY,False)
 
 #gnome
 gnome = makeSprite("images/gnome.png")
@@ -47,12 +50,26 @@ moveSprite(gnome,gnomeX,gnomeY,False)
 #Exit
 
 
-#COIN
-coin = makeSprite("images/fountain.png")
+#COIN1
+coin = makeSprite("images/coin.png")
 showSprite(coin)
-coinx = 150
-coiny = 500
-moveSprite(coin,coinx,coiny,False)
+coinX = 90
+coinY = -500
+moveSprite(coin,coinX,coinY,False)
+
+#COIN2
+coin2 = makeSprite("images/coin.png")
+showSprite(coin2)
+coin2X = 500
+coin2Y = -550
+moveSprite(coin2,coin2X,coin2Y,False)
+
+#BANDS IN SAFE
+safe = makeSprite("images/safe.png")
+hideSprite(safe)
+safeX = 250
+safeY = 200
+moveSprite(safe,safeX,safeY,False)
 
 #SCOTT
 scott = makeSprite("images/travis-scott-head.png")
@@ -67,13 +84,6 @@ showSprite(scottdoor)
 scottdoorX = 192
 scottdoorY = -1030
 moveSprite(scottdoor,scottdoorX,scottdoorY,False)
-
-#FOUNTAIN
-fountain = makeSprite("images/fountain.png")
-showSprite(fountain)
-fountainx = 900
-fountainy = 150
-moveSprite(fountain,fountainx,fountainy,False)
 
 #CASTLE GUARD
 guard = makeSprite("images/castle-guard.png")
@@ -98,7 +108,7 @@ moveSprite(hero,herox,heroy,False)
 showSprite(hero)
 
 #AMMO
-ammo = makeSprite("images/ball.png")
+ammo = makeSprite("images/ammo.png")
 ammoX = herox
 ammoY = heroy
 ammoX_change = 10
@@ -184,11 +194,23 @@ killLabel = makeLabel("SLAYED DRAGON!!!!", 70, 100, 200, killColour, background=
 guardColor = "white"
 guardLabel = makeLabel("HALT! You can't enter unless you killed a dragon. Go south to find one.", 25, 100, 200, guardColor, background="navy")
 
-guardLabel2 = makeLabel("Nice dragon slay. Welcome to UHHS Bridge Castle! You may now enter.", 25, 100, 200, guardColor, background="purple")
+guardLabel2 = makeLabel("Slayed that dragon boy!! Welcome to", 25, 100, 200, guardColor, background="purple")
+guardLabel3 = makeLabel("UHHS Bridge Castle game! You may now enter.", 25, 100, 230, guardColor, background="purple")
 
-natejohn = makeLabel("Hi, this is Nathan & John. Welcome to Bridge. What's your name?", 25, 100, 600, "black", background="maroon")
 
-hawkLabel = makeLabel("Hi, I'm Hawk. To enter castle, move north.", 25, 100, 600, "black", background="pink")
+natejohn = makeLabel("Greetings peasant... err I mean student. Welcome to Bridge. You're", 25, 100, 450, "white", background="maroon")
+
+natejohn2 = makeLabel("going to make a game like this, but way better. Press 'x' to leave room.", 25, 100, 485, "white", background="maroon")
+
+scottexit = makeLabel("Press 'x' to exit", 25, 100, 600, "white", background="red")
+
+hawkLabel = makeLabel("Hi, I'm Hawk. To enter castle, move north.", 25, 100, 500, "black", background="pink")
+
+hawkLabel2 = makeLabel("To shoot dragon, press 'a' to shoot left, 'd' right, 'w' up, & 's' down.", 25, 100, 500, "black", background="pink")
+
+hawkLabel3 = makeLabel("Nice dragon slay bro.", 25, 100, 500, "black", background="pink")
+
+
 
 noKeyColor = "red"
 noKeyLabel = makeLabel("You can't enter without a key!", 35, 100, 200, noKeyColor, background="black")
@@ -238,20 +260,20 @@ while True:
     if keyPressed("right"):
         changeSpriteImage(hero, 0*8+frame)    # 0*8 because right animations are the 0th set in the sprite sheet
         scrollBackground(-5,0)                      # The player is moving right, so we scroll the background left
-        doorx -= 5
+        doorX -= 5
         #exitx -=5
-        fountainx -=5
-        coinx -= 5
+        coinX -= 5
+        coin2X -= 5
         enemyx -= 5
         gnomeX -= 5
         scottX -= 5
         scottdoorX -= 5
         guardX -= 5
         hawkX -= 5
-        moveSprite(door,doorx,doory,False)
+        moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,exitx,exity,False)
-        moveSprite(fountain,fountainx,fountainy,False)
-        moveSprite(coin,coinx,coiny,False)
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
         moveSprite(enemy,enemyx,enemyy,False)
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
@@ -269,10 +291,10 @@ while True:
     elif keyPressed("down"):
         changeSpriteImage(hero, 1*8+frame)    # down facing animations are the 1st set
         scrollBackground(0, -5)
-        doory -= 5
+        doorY -= 5
        # exity -=5
-        fountainy -=5
-        coiny -=5
+        coinY -=5
+        coin2Y -=5
         enemyy -=5
         gnomeY -=5
         scottY -= 5
@@ -282,10 +304,10 @@ while True:
 
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
-        moveSprite(door,doorx,doory,False)
+        moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,exitx,exity,False)
-        moveSprite(fountain,fountainx,fountainy,False)
-        moveSprite(coin,coinx,coiny,False)
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
         moveSprite(enemy,enemyx,enemyy,False)
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
@@ -298,10 +320,10 @@ while True:
     elif keyPressed("left"):
         changeSpriteImage(hero, 2*8+frame)    # and so on
         scrollBackground(5,0)
-        doorx += 5
+        doorX += 5
         #exitx += 5
-        fountainx +=5
-        coinx += 5
+        coinX += 5
+        coin2X += 5
         enemyx += 5
         gnomeX += 5
         scottX += 5
@@ -310,10 +332,10 @@ while True:
         hawkX += 5
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
-        moveSprite(door,doorx,doory,False)
+        moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,exitx,exity,False)
-        moveSprite(fountain,fountainx,fountainy,False)
-        moveSprite(coin,coinx,coiny,False)
+        moveSprite(coin2,coin2X,coin2Y,False)        
+        moveSprite(coin,coinX,coinY,False)
         moveSprite(enemy,enemyx,enemyy,False)
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
@@ -327,10 +349,10 @@ while True:
         changeSpriteImage(hero,3*8+frame)
         scrollBackground(0,5)
 
-        doory += 5
+        doorY += 5
         #exity += 5
-        fountainy +=5
-        coiny += 5
+        coinY += 5
+        coin2Y += 5
         enemyy += 5
         gnomeY +=5
         scottY += 5
@@ -339,10 +361,10 @@ while True:
         hawkY += 5
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
-        moveSprite(door,doorx,doory,False)
-        #moveSprite(exit,doorx,doory,False)
-        moveSprite(fountain,fountainx,fountainy,False)
-        moveSprite(coin,coinx,coiny,False)
+        moveSprite(door,doorX,doorY,False)
+        #moveSprite(exit,doorX,doorY,False)
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
         moveSprite(enemy,enemyx,enemyy,False)
         moveSprite(gnome,gnomeX,gnomeY,False)
         moveSprite(scott,scottX,scottY,False)
@@ -423,59 +445,29 @@ while True:
       ammoX += ammoX_change
         
 
-    '''
-    distance = 500
-    speed = 1
 
-
-    if keyPressed("a") and shoot >= 0 and shoot <= distance:
-      ammox -= speed
-      moveSprite(ammo, ammox, ammoy)
-      showSprite(ammo)
-      
-      
-    elif keyPressed("d") and shoot >= distance and shoot <= distance*2:
-      ammox += speed
-      moveSprite(ammo, ammox, ammoy)
-      showSprite(ammo)
-
-    else:
-      shoot = 0
-
-    shoot+=1
-    '''
-
-    '''
+    
 #COIN PICKUP
-    if touching(hero,coin):
-      print("coin!")
-      score += 50
+    if touching(hero,coin) and coinpick == 0:
+      killSprite(coin)
+      score += 1
       changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColour)  # Update the label
-      #hideSprite(coin)
       coinpick = 1
-    '''
+      showSprite(safe)
+      updateDisplay()
+      tick(1)
+      hideSprite(safe)
 
-    '''
-
-#FOUNTAIN TOUCHING
-    if touching(hero, fountain):
-      print("Fountain!")
-      score += 50
+    if touching(hero,coin2) and coinpick == 1:
+      killSprite(coin2)
+      score += 1
       changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColour)  # Update the label
-      atFountain = 1
-      killSprite(fountain)
+      coinpick = 2
+      showSprite(safe)
+      updateDisplay()
+      tick(1)
+      hideSprite(safe)
 
-    if atFountain == 1:
-      setBackgroundImage("images/garden.jpg")
-      showLabel(ftnLabel)
-      if keyPressed("y"):
-        hideLabel(ftnLabel)
-        showLabel(ftnLabel2)
-      elif keyPressed("x"):
-        setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
-        hideLabel(ftnLabel)
-        atFountain = 0
-    '''
 #KILL DRAGON
 
     if touching(ammo, enemy) and enemy_status is "alive":
@@ -495,25 +487,40 @@ while True:
 
     if touching(hero, enemy) and enemy_status is "alive":
       hideAll()
-      hideSprite(fountain)
       setBackgroundImage("images/death.jpg")
       showLabel(dthLabel)
       showLabel(gameoverLabel)
 
 #SPEAK WITH HAWK
-    if touching(hero, hawk):
+    if touching(hero, hawk) and metGuard == "no":
       showLabel(hawkLabel)
     else:
       hideLabel(hawkLabel)
 
-    if touching(hero, guard) and enemy_status == "dead":
-      showLabel(guardLabel2)
+    if touching(hero, hawk) and metGuard == "yes" and enemy_status == "alive":
+      showLabel(hawkLabel2)
     else:
-      hideLabel(guardLabel2)
+      hideLabel(hawkLabel2)
+
+    if touching(hero, hawk) and enemy_status == "dead":
+      showLabel(hawkLabel3)
+    else:
+      hideLabel(hawkLabel3)
 
 #SPEAK WITH GUARD
+
+    if touching(hero, guard) and enemy_status == "dead":
+      showLabel(guardLabel2)
+      showLabel(guardLabel3)
+    else:
+      hideLabel(guardLabel2)
+      hideLabel(guardLabel3)
+
+
     if touching(hero, guard) and enemy_status == "alive":
       showLabel(guardLabel)
+      metGuard = "yes"
+
     else:
       hideLabel(guardLabel)
 
@@ -523,7 +530,7 @@ while True:
       hideLabel(guardLabel2)
 #SPEAK WITH GNOME
     #FIRST INTERACTION
-    if touching(hero, gnome) and withGnome < 1:
+    if touching(hero, gnome) and withGnome < 1 and inScottRoom == 0:
       showLabel(gnomeIntro1)
       if keyPressed("Y"):
         hideLabel(gnomeIntro1)
@@ -549,7 +556,7 @@ while True:
       hideLabel(gnomeIntro1)
    
     #SECOND INTERACTION
-    if touching(hero, gnome) and withGnome == 1 and doorKey is "no":
+    if touching(hero, gnome) and withGnome == 1 and doorKey is "no" and inScottRoom == 0:
       showLabel(gnomeIntro2)
       if keyPressed("Y"):
         hideLabel(gnomeIntro1)
@@ -594,16 +601,29 @@ while True:
       hideAll()
       hideSprite(door)
       showLabel(natejohn)
+      showLabel(natejohn2)
       setBackgroundImage("images/mainroom.jpg")
     else:
       hideLabel(natejohn)
+      hideLabel(natejohn2)
+
 #LEAVE MAIN ROOM
     if keyPressed("x") and inMainRoom == 1:
         inMainRoom = 0
         unhideAll()
+        hideSprite(safe)
         setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
-        doorx = 590
-        doory = 90
+        hawkX = 100
+        hawkY = 1570
+        guardX = 305
+        #SHOULD BE POSITIVE
+        guardY = -1160
+        coinX = 90
+        coinY = 770
+        coin2X = 500
+        coin2Y = 720
+        doorX = 590
+        doorY = 90
         gnomeX = 650
         gnomeY = 170
         scottdoorX = 192
@@ -615,23 +635,39 @@ while True:
         moveSprite(gnome, gnomeX, 170, False)
         moveSprite(scottdoor,192, 225, False)
         moveSprite(scott,90, 70, False)
-    
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
+        moveSprite(guard,guardX,guardY,False)
+        moveSprite(hawk,hawkX,hawkY,False)
+
+
 #SCOTT ROOM
     if touching(hero, scottdoor):
       inScottRoom = 1
       hideSprite(scottdoor)
       hideAll()
       showSprite(hero)
+      showLabel(scottexit)
       #moveSprite(hero,200,475,False)
       setBackgroundImage("images/stage.png")
-      print("Touching")
+
+#LEAVE SCOTT ROOM
     if inScottRoom == 1 and keyPressed("x"):
         inScottRoom = 0
         unhideAll()
+        hideSprite(safe)
+        hideLabel(scottexit)
         setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
-        #showSprite(door)
-        doorx = 590
-        doory = 90
+        guardX = 305
+        guardY = 1160        
+        hawkX = 100
+        hawkY = 1570
+        coinX = 90
+        coinY = 500
+        coin2X = 500
+        coin2Y = 550
+        doorX = 590
+        doorY = 90
         gnomeX = 650
         gnomeY = 170
         scottdoorX = 192
@@ -639,10 +675,15 @@ while True:
         scottX = 90
         scottY = 70
         moveSprite(hero,200,300,False)
-        moveSprite(door,doorx,doory,False)
+        moveSprite(door,doorX,doorY,False)
         moveSprite(gnome, gnomeX, 170, False)
         moveSprite(scottdoor,192, 225, False)
         moveSprite(scott,90, 70, False)
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
+        moveSprite(guard,guardX,guardY,False)
+        moveSprite(hawk,hawkX,hawkY,False)
+
 
 
 

@@ -8,8 +8,6 @@ import math, random
 '''
 SETUP
 '''
-counter = 0
-shoot = 0
 screenSize(960,720)
 setAutoUpdate(False)
 inMainRoom = 0
@@ -18,6 +16,9 @@ withGnome = 0
 doorKey = "no"
 metGuard = "no"
 coinpick = 0
+counter = 0
+
+
 
 
 
@@ -46,9 +47,6 @@ showSprite(gnome)
 gnomeX = 650
 gnomeY = -1060
 moveSprite(gnome,gnomeX,gnomeY,False)
-
-#Exit
-
 
 #COIN1
 coin = makeSprite("images/coin.png")
@@ -92,6 +90,14 @@ guardX = 305
 guardY = -110
 moveSprite(guard,guardX,guardY,False)
 
+#GATE
+gate = makeSprite("images/gate.png")
+showSprite(gate)
+gateX = 200
+gateY = -110
+moveSprite(gate,gateX,gateY,False)
+
+
 #HAWK
 hawk = makeSprite("images/hawk.png")
 showSprite(hawk)
@@ -101,16 +107,15 @@ moveSprite(hawk,hawkX,hawkY,False)
 
 #HERO
 hero  = makeSprite("images/links.gif",32)  # links.gif contains 32 separate frames of animation. Sizes are automatically calculated.
-herox = 300
-heroy = 300
-moveSprite(hero,herox,heroy,False)
-
+heroX = 300
+heroY = 300
+moveSprite(hero,heroX,heroY,False)
 showSprite(hero)
 
 #AMMO
 ammo = makeSprite("images/ammo.png")
-ammoX = herox
-ammoY = heroy
+ammoX = heroX
+ammoY = heroY
 ammoX_change = 10
 ammoY_change = 10
 ammo_state = "ready"
@@ -270,6 +275,8 @@ while True:
         scottdoorX -= 5
         guardX -= 5
         hawkX -= 5
+        gateX -= 5
+        moveSprite(gate,gateX,gateY,False)
         moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,exitx,exity,False)
         moveSprite(coin2,coin2X,coin2Y,False)
@@ -301,8 +308,8 @@ while True:
         scottdoorY -= 5
         guardY -= 5
         hawkY -= 5
-
-
+        gateY -= 5
+        moveSprite(gate,gateX,gateY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,exitx,exity,False)
@@ -330,6 +337,8 @@ while True:
         scottdoorX += 5
         guardX += 5
         hawkX += 5
+        gateX += 5
+        moveSprite(gate,gateX,gateY,False)
 
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorX,doorY,False)
@@ -359,7 +368,8 @@ while True:
         scottdoorY += 5
         guardY += 5
         hawkY += 5
-
+        gateY += 5
+        moveSprite(gate,gateX,gateY,False)
         moveSprite(scottdoor,scottdoorX,scottdoorY,False)
         moveSprite(door,doorX,doorY,False)
         #moveSprite(exit,doorX,doorY,False)
@@ -383,47 +393,47 @@ while True:
     if keyPressed("w"):
       if ammo_state is "ready":
                     # Get the current x cordinate of the spaceship
-        ammoX = herox
-        ammoY = heroy
+        ammoX = heroX
+        ammoY = heroY
         fire_ammo(ammoX, ammoY)
     
     if keyPressed("a"):
       if ammo_state is "ready":
                     # Get the current x cordinate of the spaceship
-        ammoX = herox
-        ammoY = heroy
+        ammoX = heroX
+        ammoY = heroY
         fire_ammo_left(ammoX, ammoY)
 
     if keyPressed("s"):
       if ammo_state is "ready":
                     # Get the current x cordinate of the spaceship
-        ammoX = herox
-        ammoY = heroy
+        ammoX = heroX
+        ammoY = heroY
         fire_ammo_down(ammoX, ammoY)
 
     if keyPressed("d"):
       if ammo_state is "ready":
                     # Get the current x cordinate of the spaceship
-        ammoX = herox
-        ammoY = heroy
+        ammoX = heroX
+        ammoY = heroY
         fire_ammo_right(ammoX, ammoY)
 
 
     # Bullet Movement
     if ammoY <= 0:
-      ammoY = heroy
+      ammoY = heroY
       ammo_state = "ready"
 
     if ammoY >= 950:
-      ammoY = heroy
+      ammoY = heroY
       ammo_state = "ready"
 
     if ammoX <= 0:
-      ammoX = herox
+      ammoX = heroX
       ammo_state = "ready"
     
     if ammoX >= 950:
-      ammoX = herox
+      ammoX = heroX
       ammo_state = "ready"
 
 
@@ -491,8 +501,17 @@ while True:
       showLabel(dthLabel)
       showLabel(gameoverLabel)
 
+#GATE LOCKED
+    if touching(hero, gate) and enemy_status is "alive":
+      heroY += 5
+      moveSprite(hero, heroX, heroY, False)
+#GATE UNLOCKED
+    if enemy_status is "dead":
+      hideSprite(gate)
+
+
 #SPEAK WITH HAWK
-    if touching(hero, hawk) and metGuard == "no":
+    if touching(hero, hawk) and metGuard == "no" and enemy_status == "alive":
       showLabel(hawkLabel)
     else:
       hideLabel(hawkLabel)

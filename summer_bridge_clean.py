@@ -16,7 +16,14 @@ counter = 0 #For enemy motion
 slayed = 0 #To count number of dragons slayed
 enemy_status = "alive" #shows status of dragon
 metGuard = "no" #has the hero met the guard yet
-
+score = 0 #set initial score to 0 since we've haven't got coins yet
+coin1_status = "not collected" # Coin 1 collection status
+coin2_status = "not collected" # Coin 2 collection status
+inScottRoom = "no"  # is the hero currently in Scott Room?
+doorKey = "no" #key to the main room
+inMainRoom = "no" #is the hero currently in main room?
+riddleAnswer = "the future" #answer to gnome's riddle
+withGnome = 0 #counter to count how many times hero has spoken with gnome
 
 
 
@@ -52,12 +59,68 @@ guardX = 305
 guardY = -110
 moveSprite(guard,guardX,guardY,False)
 
+#GATE
+gate = makeSprite("images/gate.png")
+showSprite(gate)
+gateX = 200
+gateY = -110
+moveSprite(gate,gateX,gateY,False)
+
 #DRAGON
 enemy = makeSprite("images/enemy.png")
 showSprite(enemy)
 enemyX = 500
 enemyY = 1000
 moveSprite(enemy,enemyX,enemyY,False)
+
+#COIN 1
+coin = makeSprite("images/coin.png")
+showSprite(coin)
+coinX = 90
+coinY = -500
+moveSprite(coin,coinX,coinY,False)
+
+#COIN 2
+coin2 = makeSprite("images/coin.png")
+showSprite(coin2)
+coin2X = 500
+coin2Y = -550
+moveSprite(coin2,coin2X,coin2Y,False)
+
+#BANDS IN SAFE
+safe = makeSprite("images/safe.png")
+hideSprite(safe)
+safeX = 250
+safeY = 200
+moveSprite(safe,safeX,safeY,False)
+
+#TRAVIS SCOTT HEAD
+scott = makeSprite("images/travis-scott-head.png")
+showSprite(scott)
+scottX = 90
+scottY = -1200
+moveSprite(scott,scottX,scottY,False)
+
+#TRAVIS SCOTT Door
+scottdoor = makeSprite("images/door.png")
+showSprite(scottdoor)
+scottdoorX = 192
+scottdoorY = -1030
+moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+
+#MAIN ROOM DOOR
+door = makeSprite("images/door2.png")
+showSprite(door)
+doorX = 590
+doorY = -1180
+moveSprite(door,doorX,doorY,False)
+
+#GNOME
+gnome = makeSprite("images/gnome.png")
+showSprite(gnome)
+gnomeX = 650
+gnomeY = -1060
+moveSprite(gnome,gnomeX,gnomeY,False)
 
 #AMMO
 ammo = makeSprite("images/ammo.png")
@@ -111,6 +174,44 @@ guardLabel2 = makeLabel("Slayed that dragon boy!! Welcome to", 25, 100, 200, gua
 
 guardLabel3 = makeLabel("UHHS Bridge Castle game! You may now enter.", 25, 100, 230, guardColor, background="purple")
 
+#ROOM EXITS
+scottexit = makeLabel("Press 'x' to exit", 25, 100, 600, "white", background="red")
+
+#DOOR LOCKED
+noKeyColor = "red"
+noKeyLabel = makeLabel("You can't enter without a key!", 35, 100, 200, noKeyColor, background="black")
+
+
+#GNOME CONVERSATIONS
+gnomeColor = "white"
+
+  #first greeting
+gnomeIntro1 = makeLabel("Hi! I'm Lil Tjay the Gnome. I guard the red door. Want to enter it? Y or N?", 25, 100, 200, gnomeColor, background="red")
+  
+  #if hero responds "N" for no
+gnomeN = makeLabel("K. Bye.", 24, 100, 200, gnomeColor, background="red")
+
+  #if hero responds "N" first time and then comes back later
+gnomeIntro2 = makeLabel("You're back? Fine, want to try again? Y or N?", 25, 100, 200, gnomeColor, background="red")
+
+  #if hero responds "Y"
+gnomeYes = makeLabel("You must answer a riddle. What is always in front of you but can’t be seen?", 24, 100, 200, gnomeColor, background="red")
+
+  #if hero answers riddle correctly
+gnomeCorrect = makeLabel("Correct! Here's the key. You may enter.", 24, 100, 200, gnomeColor, background="red")
+
+  #after hero has entered main room
+gnomeIntro3 = makeLabel("Hope you enjoyed the main room.", 25, 100, 200, gnomeColor, background="red")
+
+  #user input for answer to riddle 
+wordBox = makeTextBox(450, 300, 300, 0, "Enter answer here", 15, 24)
+hideTextBox(wordBox)
+
+#MAIN ROOM CONVERSATIONS
+natejohn = makeLabel("Greetings peasant... err I mean student. Welcome to Bridge. You're", 25, 100, 450, "white", background="maroon")
+
+natejohn2 = makeLabel("going to make a game like this, but way better. Press 'x' to leave room.", 25, 100, 485, "white", background="maroon")
+
 #GAME OVER
 dthColour = "white"
 dthLabel = makeLabel("EATEN BY DRAGON!!!!", 80, 100, 50, dthColour, background="orange")
@@ -126,7 +227,11 @@ killLabel = makeLabel("SLAYED DRAGON!!!!", 70, 100, 200, killColour, background=
 slayedColor = "orange"
 slayedLabel = makeLabel("Dragons Slayed: 0", 28, 225, 100, slayedColor, background="black")
 showLabel(slayedLabel)
-slayed = 0
+
+#SCORE FROM COLLECTING COINS
+scoreColor = "yellow"
+scoreLabel = makeLabel("Score: 0", 28, 100, 100, scoreColor, background="black")
+showLabel(scoreLabel)
 
 '''
 OTHER SETUP
@@ -157,6 +262,24 @@ while True:
         moveSprite(guard,guardX,guardY,False)
         enemyX -= 5
         moveSprite(enemy,enemyX,enemyY,False)
+        gateX -= 5
+        moveSprite(gate,gateX,gateY,False)
+        coinX -= 5
+        moveSprite(coin,coinX,coinY,False)
+        coin2X -= 5
+        moveSprite(coin2,coin2X,coin2Y,False)
+        scottX -= 5
+        moveSprite(scott,scottX,scottY,False)
+        scottdoorX -= 5
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        doorX -= 5
+        moveSprite(door,doorX,doorY,False)
+        gnomeX -= 5
+        moveSprite(gnome,gnomeX,gnomeY,False)
+
+
+
+
 
 
     elif keyPressed("down"):
@@ -170,6 +293,20 @@ while True:
         moveSprite(guard,guardX,guardY,False)
         enemyY -= 5
         moveSprite(enemy,enemyX,enemyY,False)
+        gateY -= 5
+        moveSprite(gate,gateX,gateY,False)
+        coinY -= 5
+        moveSprite(coin,coinX,coinY,False)
+        coin2Y -= 5
+        moveSprite(coin2,coin2X,coin2Y,False)
+        scottY -= 5
+        moveSprite(scott,scottX,scottY,False)
+        scottdoorY -= 5
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        doorY -= 5
+        moveSprite(door,doorX,doorY,False)
+        gnomeY -= 5
+        moveSprite(gnome,gnomeX,gnomeY,False)        
 
     elif keyPressed("left"):
         changeSpriteImage(hero, 2*8+frame)    # and so on
@@ -182,6 +319,20 @@ while True:
         moveSprite(guard,guardX,guardY,False)
         enemyX += 5
         moveSprite(enemy,enemyX,enemyY,False)
+        gateX += 5
+        moveSprite(gate,gateX,gateY,False)
+        coinX += 5
+        moveSprite(coin,coinX,coinY,False)
+        coin2X += 5
+        moveSprite(coin2,coin2X,coin2Y,False)
+        scottX += 5
+        moveSprite(scott,scottX,scottY,False)
+        scottdoorX += 5
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        doorX += 5
+        moveSprite(door,doorX,doorY,False)
+        gnomeX += 5
+        moveSprite(gnome,gnomeX,gnomeY,False)
 
     elif keyPressed("up"):
         changeSpriteImage(hero,3*8+frame)
@@ -194,6 +345,20 @@ while True:
         moveSprite(guard,guardX,guardY,False)
         enemyY += 5
         moveSprite(enemy,enemyX,enemyY,False)
+        gateY += 5
+        moveSprite(gate,gateX,gateY,False)
+        coinY += 5
+        moveSprite(coin,coinX,coinY,False)
+        coin2Y += 5
+        moveSprite(coin2,coin2X,coin2Y,False)
+        scottY += 5
+        moveSprite(scott,scottX,scottY,False)
+        scottdoorY += 5
+        moveSprite(scottdoor,scottdoorX,scottdoorY,False)
+        doorY += 5
+        moveSprite(door,doorX,doorY,False)
+        gnomeY += 5
+        moveSprite(gnome,gnomeX,gnomeY,False)
 
     else:
         changeSpriteImage(hero, 1 * 8 + 5)  # the static facing front look
@@ -248,9 +413,198 @@ while True:
       hideLabel(guardLabel2)
       hideLabel(guardLabel3)
 
+#COINS
+    #COIN PICKUP
+    if touching(hero,coin) and coin1_status == "not collected":
+      killSprite(coin)
+      score += 1
+      changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColor)  # Update the label
+      coin1_status = "collected"
+      showSprite(safe)
+      updateDisplay()
+      tick(1)
+      hideSprite(safe)
+
+    if touching(hero,coin2) and coin2_status == "not collected":
+      killSprite(coin2)
+      score += 1
+      changeLabel(scoreLabel,"Score: " + str(int(score)), scoreColor)  # Update the label
+      coin2_status = "collected"
+      showSprite(safe)
+      updateDisplay()
+      tick(1)
+      hideSprite(safe)
+      
+#DOORS & ROOMS
+  
+  #CASTLE GATE
+
+  #GATE LOCKED
+    if touching(hero, gate) and enemy_status is "alive":
+      heroY += 5
+      moveSprite(hero, heroX, heroY, False)
+  #GATE UNLOCKED
+    if enemy_status is "dead":
+      hideSprite(gate)
+
+  #SCOTT ROOM
+    #ENTER ROOM
+    if touching(hero, scottdoor):
+      inScottRoom = "yes"
+      hideSprite(scottdoor)
+      hideAll()
+      showSprite(hero)
+      setBackgroundImage("images/stage.png")
+      showLabel(scottexit)
+
+    #LEAVE ROOM
+    if inScottRoom == "yes" and keyPressed("x"):
+      inScottRoom = "no"
+      unhideAll()
+      hideSprite(safe)
+      hideLabel(scottexit)
+      setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
+      guardX = 305
+      guardY = 1160        
+      hawkX = 100
+      hawkY = 1570
+      coinX = 90
+      coinY = 500
+      coin2X = 500
+      coin2Y = 550
+      doorX = 590
+      doorY = 90
+      gnomeX = 650
+      gnomeY = 170
+      scottdoorX = 192
+      scottdoorY = 225
+      scottX = 90
+      scottY = 70
+      moveSprite(hero,200,300,False)
+      moveSprite(door,doorX,doorY,False)
+      moveSprite(gnome, gnomeX, 170, False)
+      moveSprite(scottdoor,192, 225, False)
+      moveSprite(scott,90, 70, False)
+      moveSprite(coin2,coin2X,coin2Y,False)
+      moveSprite(coin,coinX,coinY,False)
+      moveSprite(guard,guardX,guardY,False)
+      moveSprite(hawk,hawkX,hawkY,False)
+    
+  #MAIN ROOM
+    #ENTER MAIN ROOM
+    if touching(hero, door) and inScottRoom == "no" and doorKey == "no":
+      showLabel(noKeyLabel)
+    else:
+      hideLabel(noKeyLabel)
+
+    if touching(hero, door) and inScottRoom == "no" and doorKey == "yes":
+      inMainRoom = "yes"
+      withGnome = 2
+      hideLabel(gnomeCorrect)
+      hideAll()
+      hideSprite(door)
+      showLabel(natejohn)
+      showLabel(natejohn2)
+      setBackgroundImage("images/mainroom.jpg")
+    else:
+      hideLabel(natejohn)
+      hideLabel(natejohn2)
+
+    #LEAVE MAIN ROOM
+    if keyPressed("x") and inMainRoom == "yes":
+        inMainRoom = "no"
+        unhideAll()
+        hideSprite(safe)
+        setBackgroundImage( [  ["images/stage2.png", "images/forest.jpg"] ,["images/forest.jpg", "images/forest.jpg"]  ])
+        hawkX = 100
+        hawkY = 1570
+        guardX = 305
+        guardY = 1160
+        coinX = 90
+        coinY = 770
+        coin2X = 500
+        coin2Y = 720
+        doorX = 590
+        doorY = 90
+        gnomeX = 650
+        gnomeY = 170
+        scottdoorX = 192
+        scottdoorY = 225
+        scottX = 90
+        scottY = 70
+        moveSprite(hero,600,200,False)
+        moveSprite(door,600,0,False)
+        moveSprite(gnome, gnomeX, 170, False)
+        moveSprite(scottdoor,192, 225, False)
+        moveSprite(scott,90, 70, False)
+        moveSprite(coin2,coin2X,coin2Y,False)
+        moveSprite(coin,coinX,coinY,False)
+        moveSprite(guard,guardX,guardY,False)
+        moveSprite(hawk,hawkX,hawkY,False)
+    
+
+#SPEAK WITH GNOME
+    #FIRST INTERACTION
+    if touching(hero, gnome) and withGnome < 1 and inScottRoom == "no":
+      showLabel(gnomeIntro1)
+      if keyPressed("Y"):
+        hideLabel(gnomeIntro1)
+        showLabel(gnomeYes)
+        withGnome = 1
+        showTextBox(wordBox)
+        entry = textBoxInput(wordBox).lower()
+        if entry == riddleAnswer and inMainRoom == "no":
+          showLabel(gnomeCorrect)
+          doorKey = "yes"
+          hideTextBox(wordBox)
+          hideLabel(gnomeYes)
+        else:
+          hideLabel(gnomeCorrect)
+      if keyPressed("N"):
+        withGnome = 1
+        hideLabel(gnomeIntro1)
+        showLabel(gnomeN)
+        updateDisplay()
+        tick(2)
+        hideLabel(gnomeN)
+    else:
+      hideLabel(gnomeIntro1)
+   
+    #SECOND INTERACTION
+    if touching(hero, gnome) and withGnome == 1 and doorKey is "no" and inScottRoom == "no":
+      showLabel(gnomeIntro2)
+      if keyPressed("Y"):
+        hideLabel(gnomeIntro1)
+        showLabel(gnomeYes)
+        withGnome = 1
+        showTextBox(wordBox)
+        entry = textBoxInput(wordBox).lower()
+        if entry == riddleAnswer and inMainRoom == "no":
+          showLabel(gnomeCorrect)
+          doorKey = "yes"
+          hideTextBox(wordBox)
+          hideLabel(gnomeYes)
+        else:
+          hideLabel(gnomeCorrect)
+      if keyPressed("N"):
+        withGnome = 1
+        hideLabel(gnomeIntro2)
+        showLabel(gnomeN)
+        updateDisplay()
+        tick(2)
+        hideLabel(gnomeN)
+    else:
+      hideLabel(gnomeIntro2)
+    
+    #POST-ROOM INTERACTION
+    if touching(hero, gnome) and withGnome == 2:
+      showLabel(gnomeIntro3)
+    else:
+      hideLabel(gnomeIntro3)
 
 
-#EATEN BY DRAGON
+#DRAGON & AMMO
+  #EATEN BY DRAGON
 
     if touching(hero, enemy):
       hideAll()
@@ -258,7 +612,7 @@ while True:
       showLabel(dthLabel)
       showLabel(gameoverLabel)
 
-#SHOOT AMMO
+  #SHOOT AMMO
     if keyPressed("w"):
       if ammo_state == "ready":
                     # Get the current x cordinate of the spaceship
@@ -322,7 +676,7 @@ while True:
       ammoX += ammoX_change
   
 
-#KILL DRAGON
+  #KILL DRAGON
 
     if touching(ammo, enemy) and enemy_status is "alive":
       enemy_status = "dead"
